@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flappy Bird Game</title>
+    <style>
+      /* CSS for game elements */
+      #game-area {
+        position: relative;
+        width: 500px;
+        height: 500px;
+        border: 1px solid #000;
+        overflow: hidden;
+      }
+      
+      #bird {
+        position: absolute;
+        top: 200px;
+        left: 50px;
+        width: 50px;
+        height: 50px;
+        background-color: #f00;
+        border-radius: 50%;
+      }
+      
+      .pipe {
+        position: absolute;
+        width: 100px;
+        height: 200px;
+        background-color: #0f0;
+      }
+      
+      .top-pipe {
+        top: 0;
+      }
+      
+      .bottom-pipe {
+        bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-area">
+      <div id="bird"></div>
+    </div>
+    
+    <script>
+      // JavaScript code for game logic
+      
+      // Variables
+      var bird = document.getElementById('bird');
+      var pipes = [];
+      var gameArea = document.getElementById('game-area');
+      var gameLoop;
+      var birdSpeed = 1; // in pixels per frame
+      var gravity = 0.1; // in pixels per frame squared
+      
+      // Event listener for spacebar
+      document.addEventListener('keydown', function(event) {
+        if (event.code === 'Space') {
+          birdSpeed = -5; // negative speed to move bird upwards
+        }
+      });
+      
+      // Game loop
+      function loop() {
+        // Move bird downwards
+        birdSpeed += gravity;
+        bird.style.top = bird.offsetTop + birdSpeed + 'px';
+        
+        // Check for collision with pipes
+        for (var i = 0; i < pipes.length; i++) {
+          var pipe = pipes[i];
+          
+          // Check for horizontal collision
+          if (bird.offsetLeft + bird.offsetWidth > pipe.offsetLeft
+              && bird.offsetLeft < pipe.offsetLeft + pipe.offsetWidth) {
+            
+            // Check for vertical collision with top pipe
+            if (bird.offsetTop < pipe.offsetHeight
+                && pipe.classList.contains('top-pipe')) {
+              endGame();
+            }
+            
+            // Check for vertical collision with bottom pipe
+            if (bird.offsetTop + bird.offsetHeight > gameArea.offsetHeight - pipe.offsetHeight
+                && pipe.classList.contains('bottom-pipe')) {
+              endGame();
+            }
+          }
+        }
+        
+        // Check if bird is out of game area
+        if (bird.offsetTop < 0 || bird.offsetTop + bird.offsetHeight > gameArea.offsetHeight) {
+          endGame();
+        }
+      }
+      
+      // Start game loop
+      function startGame() {
+        gameLoop = setInterval(loop, 10);
+      }
+      
+      // End game
+      function endGame() {
+        clearInterval(gameLoop);
+        alert('Game over!');
+      }
+      
+      // JavaScript code for game setup
+      
+      // Create pipes
+      function createPipes() {
+        var pipeSpacing = 150; // in pixels
+        var pipeCount = Math.floor(gameArea.offsetWidth / pipeSpacing);
+        var pipePosition = 0;
+        
+        for (var i = 0; i < pipeCount; i++) {
+          var topPipeHeight = Math.floor(Math.random() * 200) + 50; // in pixels
+          var bottomPipeHeight = gameArea.offsetHeight - topPipeHeight - 200; // in pixels
+                var topPipe = document.createElement('div');
+      topPipe.classList.add('pipe', 'top-pipe');
+      topPipe.style.left = pipePosition + 'px';
+      topPipe.style.height = topPipeHeight + 'px';
+      
+      var bottomPipe = document.createElement('div');
+      bottomPipe.classList.add('pipe', 'bottom-pipe');
+      bottomPipe.style.left = pipePosition + 'px';
+      bottomPipe.style.height = bottomPipeHeight + 'px';
+      
+      gameArea.appendChild(topPipe);
+      gameArea.appendChild(bottomPipe);
+      pipes.push(topPipe);
+      pipes.push(bottomPipe);
+      
+      pipePosition += pipeSpacing;
+    }
+  }
+  
+  // Initialize game
+  function initGame() {
+    createPipes();
+    startGame();
+  }
+  
+  // Call game initialization function
+  initGame();
+</script>
+
+  </body>
+</html>
+
